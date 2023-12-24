@@ -29,6 +29,15 @@ class BookApiController extends Controller
     }
 
     /**
+     * Bulk store for books
+     */
+
+    public function bulkStore()
+    {
+    }
+
+
+    /**
      * Display the specified resource.
      */
     public function show(Book $book)

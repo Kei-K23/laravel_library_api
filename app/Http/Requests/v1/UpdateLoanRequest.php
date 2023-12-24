@@ -3,6 +3,7 @@
 namespace App\Http\Requests\v1;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateLoanRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateLoanRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +22,30 @@ class UpdateLoanRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
-        ];
+        $method = $this->method();
+        if ($method === "PUT") {
+            return [
+                'userId' => ['required', 'numeric'],
+                'bookId' => ['required', 'numeric'],
+                'status' => ['required', 'string', Rule::in(['LOADED', 'RETURNED'])]
+            ];
+        }
+
+        if ($method === "PATCH") {
+            return [
+                'userId' => ['sometimes', 'required', 'numeric'],
+                'bookId' => ['sometimes', 'required', 'numeric'],
+                'status' => ['sometimes', 'required', 'string', Rule::in(['LOADED', 'RETURNED'])]
+            ];
+        }
+    }
+
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'user_id' => $this->userId,
+            'book_id' => $this->bookId,
+        ]);
     }
 }

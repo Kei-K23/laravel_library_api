@@ -4,7 +4,8 @@ namespace App\Http\Requests\v1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateAuthorRequest extends FormRequest
+
+class UpdateLoanRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,18 +23,19 @@ class UpdateAuthorRequest extends FormRequest
     public function rules(): array
     {
         $method = $this->method();
-
         if ($method === "PUT") {
             return [
                 'name' => ['required', 'string', 'min:2'],
-                'biography' => ['required', 'string', 'min:4']
+                'email' => ['required', 'string', 'email'],
+                'password' => ['required', 'string'],
             ];
         }
 
         if ($method === "PATCH") {
             return [
                 'name' => ['sometimes', 'required', 'string', 'min:2'],
-                'biography' => ['sometimes', 'required', 'string', 'min:4']
+                'email' => ['sometimes', 'required', 'string', 'email'],
+                'password' => ['sometimes', 'required', 'string'],
             ];
         }
     }
