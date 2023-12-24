@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreBookRequest;
-use App\Http\Requests\UpdateBookRequest;
+use App\Http\Requests\v1\StoreBookRequest;
+use App\Http\Requests\v1\UpdateBookRequest;
 use App\Http\Resources\v1\BookCollection;
 use App\Http\Resources\v1\BookResource;
 use App\Models\Book;
@@ -21,19 +21,11 @@ class BookApiController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreBookRequest $request)
     {
-        //
+        return Book::create($request->all());
     }
 
     /**
@@ -42,14 +34,6 @@ class BookApiController extends Controller
     public function show(Book $book)
     {
         return new BookResource($book);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Book $book)
-    {
-        //
     }
 
     /**

@@ -9,6 +9,15 @@ class Book extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'title',
+        'author_id',
+        'ISBN',
+        'genre',
+        'description',
+        'availability_status'
+    ];
+
     // filter
     public function scopeFilter($query, array $filters)
     {

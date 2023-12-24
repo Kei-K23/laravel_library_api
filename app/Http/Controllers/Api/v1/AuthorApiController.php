@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreAuthorRequest;
-use App\Http\Requests\UpdateAuthorRequest;
+use App\Http\Requests\v1\StoreAuthorRequest;
+use App\Http\Requests\v1\UpdateAuthorRequest;
 use App\Http\Resources\v1\AuthorResource;
 use App\Http\Resources\v1\AuthorCollection;
 use App\Models\Author;
@@ -17,7 +17,14 @@ class AuthorApiController extends Controller
      */
     public function index(Request $req)
     {
-        return new AuthorCollection(Author::filter($req->query())->paginate());
+        $authorsQuery = Author::filter($req->query());
+        if ($req->query('includeBooks')) {
+            $authorsQuery = $authorsQuery->with('books');
+        }
+
+        $authors = $authorsQuery->paginate();
+
+        return new AuthorCollection($authors);
     }
 
     /**
@@ -39,8 +46,13 @@ class AuthorApiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Author $author)
+    public function show(Author $author, Request $req)
     {
+        // include books
+        if ($req->query('includeBooks')) {
+            return new AuthorResource($author->loadMissing('books'));
+        }
+
         return new AuthorResource($author);
     }
 

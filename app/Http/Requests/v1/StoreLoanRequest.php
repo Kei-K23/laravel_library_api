@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\v1;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreLoanRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class StoreLoanRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,17 @@ class StoreLoanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'userId' => ['required', 'numeric'],
+            'bookId' => ['required', 'numeric'],
+            'status' => ['required', 'string', Rule::in(['LOADED', 'RETURNED'])]
         ];
+    }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'user_id' => $this->userId,
+            'book_id' => $this->bookId,
+        ]);
     }
 }

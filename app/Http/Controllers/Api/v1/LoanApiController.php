@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreLoanRequest;
-use App\Http\Requests\UpdateLoanRequest;
+use App\Http\Requests\v1\StoreLoanRequest;
+use App\Http\Requests\v1\UpdateLoanRequest;
 use App\Models\Loan;
 
 class LoanApiController extends Controller
