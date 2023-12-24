@@ -1,19 +1,22 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\v1;
 
-use App\Http\Requests\StoreLoanRequest;
-use App\Http\Requests\UpdateLoanRequest;
-use App\Models\Loan;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreBookRequest;
+use App\Http\Requests\UpdateBookRequest;
+use App\Http\Resources\v1\BookCollection;
+use App\Http\Resources\v1\BookResource;
+use App\Models\Book;
 
-class LoanController extends Controller
+class BookApiController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        return  new BookCollection(Book::paginate(10));
     }
 
     /**
@@ -27,7 +30,7 @@ class LoanController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreLoanRequest $request)
+    public function store(StoreBookRequest $request)
     {
         //
     }
@@ -35,15 +38,15 @@ class LoanController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Loan $loan)
+    public function show(Book $book)
     {
-        //
+        return new BookResource($book);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Loan $loan)
+    public function edit(Book $book)
     {
         //
     }
@@ -51,7 +54,7 @@ class LoanController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateLoanRequest $request, Loan $loan)
+    public function update(UpdateBookRequest $request, Book $book)
     {
         //
     }
@@ -59,7 +62,7 @@ class LoanController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Loan $loan)
+    public function destroy(Book $book)
     {
         //
     }
