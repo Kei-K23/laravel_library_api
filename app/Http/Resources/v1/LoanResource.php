@@ -16,11 +16,12 @@ class LoanResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'userId',
-            'bookId',
-            'status',
-            'loanDate',
-            'dueDate',
+            'userId' => $this->user_id,
+            'bookId' => $this->book_id,
+            'status' => $this->status,
+            'loanDate' => $this->loan_date,
+            'dueDate' => $this->due_date,
+            'user' => UserResource::collection($this->whenLoaded('users')),
         ];
     }
 }

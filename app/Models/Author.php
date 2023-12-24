@@ -9,6 +9,11 @@ class Author extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+        'biography'
+    ];
+
     // filter by author name
     public function scopeFilter($query, array $filters)
     {

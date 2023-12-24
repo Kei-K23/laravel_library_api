@@ -5,24 +5,31 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\StoreLoanRequest;
 use App\Http\Requests\v1\UpdateLoanRequest;
+use App\Http\Resources\v1\LoanCollection;
+use App\Http\Resources\v1\LoanResource;
+use App\Models\Book;
 use App\Models\Loan;
+use Illuminate\Http\Request;
 
 class LoanApiController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $req)
     {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $loansQuery =  Loan::filter($req->query());
+
+        if ($req->query('includeBookAndUser')) {
+            $loansQuery = $loansQuery->with(['book', 'user']);
+        } elseif ($req->query('includeUser')) {
+            $loansQuery = $loansQuery->with('user');
+        }
+
+        $loans = $loansQuery->paginate();
+
+        return new LoanCollection($loans);
     }
 
     /**
@@ -30,15 +37,29 @@ class LoanApiController extends Controller
      */
     public function store(StoreLoanRequest $request)
     {
-        //
+
+        $book = Book::where('id', $request->input('bookId'))->first();
+
+        if ($book->availability_status === "AVAILABLE") {
+            $book->availability_status = "LOADED";
+            $book->save();
+
+            return new LoanResource(Loan::create($request->all()));
+        } else {
+            return response(['error' => $book->id . " is already loaned! Cannot be loan!"], 400);
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Loan $loan)
+    public function show(Request $req, Loan $loan)
     {
-        //
+        if ($req->query('includeBookAndUser')) {
+            return new LoanResource($loan->loadMissing('user'));
+        }
+
+        return new LoanResource($loan);
     }
 
     /**

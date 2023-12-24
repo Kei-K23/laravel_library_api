@@ -12,7 +12,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    // filter by author name
+    // filter by name
     public function scopeFilter($query, array $filters)
     {
         if ($filters['name'] ?? false) {

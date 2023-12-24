@@ -4,7 +4,7 @@ namespace App\Http\Requests\v1;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAuthorRequest extends FormRequest
+class StoreUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,8 @@ class StoreAuthorRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'min:2'],
-            'biography' => ['required', 'string', 'min:4']
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
         ];
     }
 }

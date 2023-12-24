@@ -25,7 +25,7 @@ class BookApiController extends Controller
      */
     public function store(StoreBookRequest $request)
     {
-        return Book::create($request->all());
+        return new BookResource(Book::create($request->all()));
     }
 
     /**

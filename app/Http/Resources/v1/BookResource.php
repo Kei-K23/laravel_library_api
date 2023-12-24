@@ -22,8 +22,6 @@ class BookResource extends JsonResource
             "genre" => $this->genre,
             "description" => $this->description,
             "availabilityStatus" => $this->availability_status,
-            // "createdAt" => $this->created_at,
-            // "updatedAt" => $this->updated_at
         ];
     }
 }
