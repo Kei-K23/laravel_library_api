@@ -12,6 +12,14 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    // filter by author name
+    public function scopeFilter($query, array $filters)
+    {
+        if ($filters['name'] ?? false) {
+            $query->where('name', 'like', '%' . request('name') . '%');
+        }
+    }
+
     /**
      * The attributes that are mass assignable.
      *

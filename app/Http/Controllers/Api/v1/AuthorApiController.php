@@ -8,15 +8,16 @@ use App\Http\Requests\UpdateAuthorRequest;
 use App\Http\Resources\v1\AuthorResource;
 use App\Http\Resources\v1\AuthorCollection;
 use App\Models\Author;
+use Illuminate\Http\Request;
 
 class AuthorApiController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $req)
     {
-        return new AuthorCollection(Author::all());
+        return new AuthorCollection(Author::filter($req->query())->paginate());
     }
 
     /**

@@ -13,9 +13,9 @@ class UserApiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $req)
     {
-        return new UserCollection(User::all());
+        return new UserCollection(User::filter($req->query())->paginate());
     }
 
     /**

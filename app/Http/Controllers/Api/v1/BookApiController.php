@@ -8,15 +8,16 @@ use App\Http\Requests\UpdateBookRequest;
 use App\Http\Resources\v1\BookCollection;
 use App\Http\Resources\v1\BookResource;
 use App\Models\Book;
+use Illuminate\Http\Request;
 
 class BookApiController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $req)
     {
-        return  new BookCollection(Book::paginate(10));
+        return  new BookCollection(Book::filter($req->query())->paginate());
     }
 
     /**
