@@ -9,12 +9,19 @@ use App\Http\Resources\v1\AuthorResource;
 use App\Http\Resources\v1\AuthorCollection;
 use App\Models\Author;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
 
 class AuthorApiController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
+
     public function index(Request $req)
     {
         $authorsQuery = Author::filter($req->query());
@@ -32,7 +39,13 @@ class AuthorApiController extends Controller
      */
     public function store(StoreAuthorRequest $request)
     {
-        return new AuthorResource(Author::create($request->all()));
+        $isAdmin = $request->user()->tokenCan("all");
+
+        if ($isAdmin) {
+            return new AuthorResource(Author::create($request->all()));
+        } else {
+            return response(['error' => 'unauthorized'], 401);
+        }
     }
 
     /**
@@ -53,14 +66,27 @@ class AuthorApiController extends Controller
      */
     public function update(UpdateAuthorRequest $request, Author $author)
     {
-        //
+        $isAdmin = $request->user()->tokenCan("all");
+
+        if ($isAdmin) {
+            $author->update($request->all());
+            return new  AuthorResource($author);
+        } else {
+            return response(['error' => 'unauthorized'], 401);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Author $author)
+    public function destroy(Request $request, Author $author)
     {
-        //
+        $isAdmin = $request->user()->tokenCan("all");
+        if ($isAdmin) {
+            $author->delete();
+            return new AuthorResource($author);
+        } else {
+            return response(['error' => 'unauthorized'], 401);
+        }
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\v1\BulkStoreBookRequest;
 use App\Http\Requests\v1\StoreBookRequest;
 use App\Http\Requests\v1\UpdateBookRequest;
 use App\Http\Resources\v1\BookCollection;
@@ -15,6 +16,12 @@ class BookApiController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
+
     public function index(Request $req)
     {
         return  new BookCollection(Book::filter($req->query())->paginate());
@@ -25,15 +32,24 @@ class BookApiController extends Controller
      */
     public function store(StoreBookRequest $request)
     {
-        return new BookResource(Book::create($request->all()));
+        $isAdmin = $request->user()->tokenCan("all");
+
+        if ($isAdmin) {
+            return new BookResource(Book::create($request->all()));
+        } else {
+            return response(['error' => 'unauthorized'], 401);
+        }
     }
 
     /**
      * Bulk store for books
      */
 
-    public function bulkStore()
+    public function bulkStore(BulkStoreBookRequest $request)
     {
+        $bulk = collect($request->all());
+
+        Book::insert($bulk->toArray());
     }
 
 
@@ -50,14 +66,28 @@ class BookApiController extends Controller
      */
     public function update(UpdateBookRequest $request, Book $book)
     {
-        //
+        $isAdmin = $request->user()->tokenCan("all");
+
+        if ($isAdmin) {
+            $book->update($request->all());
+
+            return new BookResource($book);
+        } else {
+            return response(['error' => 'unauthorized'], 401);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Book $book)
+    public function destroy(Request $request, Book $book)
     {
-        //
+        $isAdmin = $request->user()->tokenCan("all");
+        if ($isAdmin) {
+            $book->delete();
+            return new BookResource($book);
+        } else {
+            return response(['error' => 'unauthorized'], 401);
+        }
     }
 }

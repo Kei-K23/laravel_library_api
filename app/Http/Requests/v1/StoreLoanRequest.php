@@ -25,7 +25,7 @@ class StoreLoanRequest extends FormRequest
         return [
             'userId' => ['required', 'numeric'],
             'bookId' => ['required', 'numeric'],
-            'status' => ['required', 'string', Rule::in(['LOADED', 'RETURNED'])]
+            'status' => ['required', 'string', Rule::in(['LOANED', 'RETURNED'])]
         ];
     }
 

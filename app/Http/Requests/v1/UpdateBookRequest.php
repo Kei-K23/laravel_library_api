@@ -12,7 +12,8 @@ class UpdateBookRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+        return $user !== null and $user->tokenCan('all');
     }
 
     /**
@@ -37,12 +38,12 @@ class UpdateBookRequest extends FormRequest
 
         if ($method === "PATCH") {
             return [
-                "title" => ['sometimes', 'required', 'string', 'min:3'],
-                "authorId" => ['sometimes', 'required', 'numeric'],
-                "ISBN" => ['sometimes', 'required', 'string'],
-                'genre' => ['sometimes', 'required', Rule::in(['Fantasy', 'Science Fiction', 'Mystery', 'Romance', 'Thriller', 'Non-Fiction'])],
-                'description' => ['sometimes', 'required', 'string', 'min:5'],
-                'availabilityStatus' => ['sometimes', 'required', Rule::in(['AVAILABLE', 'LOANED'])]
+                "title" => ['sometimes', 'required', 'string', 'min:3',],
+                "authorId" => ['sometimes', 'required', 'numeric',],
+                "ISBN" => ['sometimes', 'required', 'string',],
+                'genre' => ['sometimes', 'required', Rule::in(['Fantasy', 'Science Fiction', 'Mystery', 'Romance', 'Thriller', 'Non-Fiction']),],
+                'description' => ['sometimes', 'required', 'string', 'min:5',],
+                'availabilityStatus' => ['sometimes', 'required', Rule::in(['AVAILABLE', 'LOANED']),]
             ];
         }
     }

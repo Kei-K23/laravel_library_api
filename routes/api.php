@@ -27,4 +27,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\Api\v1'], f
     Route::apiResource('authors', AuthorApiController::class);
     Route::apiResource('loans', LoanApiController::class);
     Route::apiResource('users', UserApiController::class);
+
+    Route::post('books/bulk', [BookApiController::class, 'bulkStore']);
+    Route::post('users/tokens', [UserApiController::class, 'tokenCreate']);
 });

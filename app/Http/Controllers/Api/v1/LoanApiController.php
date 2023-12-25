@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Middleware\CheckTokenAbility;
 use App\Http\Requests\v1\StoreLoanRequest;
 use App\Http\Requests\v1\UpdateLoanRequest;
 use App\Http\Resources\v1\LoanCollection;
@@ -10,12 +11,19 @@ use App\Http\Resources\v1\LoanResource;
 use App\Models\Book;
 use App\Models\Loan;
 use Illuminate\Http\Request;
+use Laravel\Sanctum\Http\Middleware\CheckAbilities;
 
 class LoanApiController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
+
     public function index(Request $req)
     {
 
@@ -41,7 +49,7 @@ class LoanApiController extends Controller
         $book = Book::where('id', $request->input('bookId'))->first();
 
         if ($book->availability_status === "AVAILABLE") {
-            $book->availability_status = "LOADED";
+            $book->availability_status = "LOANED";
             $book->save();
 
             return new LoanResource(Loan::create($request->all()));
@@ -63,26 +71,39 @@ class LoanApiController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Loan $loan)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdateLoanRequest $request, Loan $loan)
     {
-        //
+        if ($request->input('status') === "RETURNED") {
+            $book = Book::where('id', $request->input("bookId"))->first();
+
+            if ($book->availability_status === "LOANED") {
+                $book->availability_status = "AVAILABLE";
+                $book->save();
+                $loan->update($request->all());
+                return new LoanResource($loan);
+            }
+        }
+
+        if ($request->input('status') === "LOANED") {
+            $loan->update($request->all());
+
+            return new LoanResource($loan);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Loan $loan)
+    public function destroy(Request $request, Loan $loan)
     {
-        //
+        $isAdmin = $request->user()->tokenCan("all");
+        if ($isAdmin) {
+            $loan->delete();
+            return new LoanResource($loan);
+        } else {
+            return response(['error' => 'unauthorized'], 401);
+        }
     }
 }

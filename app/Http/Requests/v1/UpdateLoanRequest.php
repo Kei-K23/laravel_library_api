@@ -12,7 +12,8 @@ class UpdateLoanRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user = $this->user();
+        return $user !== null and $user->tokenCan(['all', 'loan']);
     }
 
     /**
@@ -27,7 +28,7 @@ class UpdateLoanRequest extends FormRequest
             return [
                 'userId' => ['required', 'numeric'],
                 'bookId' => ['required', 'numeric'],
-                'status' => ['required', 'string', Rule::in(['LOADED', 'RETURNED'])]
+                'status' => ['required', 'string', Rule::in(['LOANED', 'RETURNED'])]
             ];
         }
 
@@ -35,7 +36,7 @@ class UpdateLoanRequest extends FormRequest
             return [
                 'userId' => ['sometimes', 'required', 'numeric'],
                 'bookId' => ['sometimes', 'required', 'numeric'],
-                'status' => ['sometimes', 'required', 'string', Rule::in(['LOADED', 'RETURNED'])]
+                'status' => ['sometimes', 'required', 'string', Rule::in(['LOANED', 'RETURNED'])]
             ];
         }
     }

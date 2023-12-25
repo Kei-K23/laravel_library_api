@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\v1\StoreUserRequest;
+use App\Http\Requests\v1\UpdateUserRequest;
 use App\Http\Resources\v1\UserCollection;
 use App\Http\Resources\v1\UserResource;
 use App\Models\User;
@@ -12,6 +13,8 @@ use Illuminate\Http\Request;
 
 class UserApiController extends Controller
 {
+
+
     /**
      * Display a listing of the resource.
      */
@@ -45,9 +48,39 @@ class UserApiController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        //
+        $user->update($request->all());
+
+        return new UserResource($user);
+    }
+
+    // create token for authorization for member and admin
+    public function tokenCreate(Request $req)
+    {
+        $req->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string']
+        ]);
+
+        $user = User::where('email', $req->input('email'))->first();
+
+        if ($user) {
+            if (password_verify($req->input('password'), $user->password)) {
+                if ($user->account === "Member") {
+                    $token =   $user->createToken('member', ['read', 'loan'])->plainTextToken;
+                    return response(['memberToken' => $token]);
+                }
+                if ($user->account === "Admin") {
+                    $token =   $user->createToken('admin', ['all'])->plainTextToken;
+                    return response(['adminToken' => $token]);
+                }
+            }
+        }
+
+        return response([
+            'error' => 'Invalid user!'
+        ], 403);
     }
 
     /**
